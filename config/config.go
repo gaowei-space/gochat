@@ -6,11 +6,12 @@
 package config
 
 import (
-	"github.com/spf13/viper"
 	"os"
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/spf13/viper"
 )
 
 var once sync.Once
@@ -21,11 +22,11 @@ const (
 	SuccessReplyCode      = 0
 	FailReplyCode         = 1
 	SuccessReplyMsg       = "success"
-	QueueName             = "gochat_queue"
+	QueueName             = "gochat:queue"
 	RedisBaseValidTime    = 86400
-	RedisPrefix           = "gochat_"
-	RedisRoomPrefix       = "gochat_room_"
-	RedisRoomOnlinePrefix = "gochat_room_online_count_"
+	RedisPrefix           = "gochat:"
+	RedisRoomPrefix       = "gochat:room:"
+	RedisRoomOnlinePrefix = "gochat:room:online_count:"
 	MsgVersion            = 1
 	OpSingleSend          = 2 // single user
 	OpRoomSend            = 3 // send to room

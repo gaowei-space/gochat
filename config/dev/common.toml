@@ -8,6 +8,6 @@ password = ""
 connectionTimeout = 5
 
 [common-redis]
-redisAddress = "127.0.0.1:6379"
+redisAddress = "172.18.0.76:6480"
 redisPassword = ""
-db = 0
+db = 6

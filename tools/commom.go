@@ -10,12 +10,13 @@ import (
 	"crypto/sha1"
 	"encoding/base64"
 	"fmt"
-	"github.com/bwmarrin/snowflake"
 	"io"
 	"time"
+
+	"github.com/bwmarrin/snowflake"
 )
 
-const SessionPrefix = "sess_"
+const SessionPrefix = "gochat:sess:"
 
 func GetSnowflakeId() string {
 	//default node id eq 1,this can modify to different serverId node
@@ -36,7 +37,7 @@ func CreateSessionId(sessionId string) string {
 }
 
 func GetSessionIdByUserId(userId int) string {
-	return fmt.Sprintf("sess_map_%d", userId)
+	return SessionPrefix + fmt.Sprintf("map_%d", userId)
 }
 
 func GetSessionName(sessionId string) string {
