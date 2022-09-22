@@ -11,3 +11,6 @@ connectionTimeout = 5
 redisAddress = "127.0.0.1:6379"
 redisPassword = ""
 db = 0
+
+[common-mysql]
+dsn = "oa:QAJZGNx2SrLcgysriuZfg8gSDnJUSE9b@tcp(172.18.0.76:3306)/gochat?charset=utf8mb4&parseTime=True"

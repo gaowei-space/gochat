@@ -6,32 +6,26 @@
 package db
 
 import (
-	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/sqlite"
-	"github.com/sirupsen/logrus"
 	"gochat/config"
-	"path/filepath"
 	"sync"
-	"time"
+
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+	"github.com/sirupsen/logrus"
 )
 
 var dbMap = map[string]*gorm.DB{}
 var syncLock sync.Mutex
+var dbName = "gochat"
 
 func init() {
-	initDB("gochat")
+	initMySQL(dbName, config.Conf.Common.CommonMysql.Dsn)
 }
 
-func initDB(dbName string) {
+func initMySQL(dbName string, dsn string) {
 	var e error
-	// if prod env , you should change mysql driver for yourself !!!
-	realPath, _ := filepath.Abs("./")
-	configFilePath := realPath + "/db/gochat.sqlite3"
 	syncLock.Lock()
-	dbMap[dbName], e = gorm.Open("sqlite3", configFilePath)
-	dbMap[dbName].DB().SetMaxIdleConns(4)
-	dbMap[dbName].DB().SetMaxOpenConns(20)
-	dbMap[dbName].DB().SetConnMaxLifetime(8 * time.Second)
+	dbMap[dbName], e = gorm.Open("mysql", dsn)
 	if config.GetMode() == "dev" {
 		dbMap[dbName].LogMode(true)
 	}
@@ -53,5 +47,5 @@ type DbGoChat struct {
 }
 
 func (*DbGoChat) GetDbName() string {
-	return "gochat"
+	return dbName
 }
