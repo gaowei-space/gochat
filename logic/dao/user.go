@@ -6,9 +6,10 @@
 package dao
 
 import (
-	"github.com/pkg/errors"
 	"gochat/db"
 	"time"
+
+	"github.com/pkg/errors"
 )
 
 var dbIns = db.GetDb("gochat")
@@ -22,7 +23,7 @@ type User struct {
 }
 
 func (u *User) TableName() string {
-	return "user"
+	return "users"
 }
 
 func (u *User) Add() (userId int, err error) {
