@@ -24,8 +24,8 @@ const (
 	SuccessReplyMsg       = "success"
 	QueueName             = "gochat:queue"
 	RedisBaseValidTime    = 86400
-	RedisPrefix           = "gochat:"
-	RedisRoomPrefix       = "gochat:room:"
+	RedisPrefix           = "gochat:ws:"
+	RedisRoomPrefix       = "gochat:room:list:"
 	RedisRoomOnlinePrefix = "gochat:room:online_count:"
 	MsgVersion            = 1
 	OpSingleSend          = 2 // single user

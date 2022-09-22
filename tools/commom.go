@@ -33,15 +33,15 @@ func GetRandomToken(length int) string {
 }
 
 func CreateSessionId(sessionId string) string {
-	return SessionPrefix + sessionId
+	return SessionPrefix + fmt.Sprintf("list:%s", sessionId)
 }
 
 func GetSessionIdByUserId(userId int) string {
-	return SessionPrefix + fmt.Sprintf("map_%d", userId)
+	return SessionPrefix + fmt.Sprintf("uid:%d", userId)
 }
 
 func GetSessionName(sessionId string) string {
-	return SessionPrefix + sessionId
+	return SessionPrefix + fmt.Sprintf("list:%s", sessionId)
 }
 
 func Sha1(s string) (str string) {
