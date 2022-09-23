@@ -7,10 +7,11 @@ package task
 
 import (
 	"encoding/json"
-	"github.com/sirupsen/logrus"
 	"gochat/config"
 	"gochat/proto"
 	"math/rand"
+
+	"github.com/sirupsen/logrus"
 )
 
 type PushParams struct {
@@ -56,7 +57,8 @@ func (task *Task) Push(msg string) {
 			Msg:      m.Msg,
 		}
 	case config.OpRoomSend:
-		task.broadcastRoomToConnect(m.RoomId, m.Msg)
+		seq := task.broadcastRoomToConnect(m.RoomId, m.Msg)
+		task.broadcastRoomToDb(m.RoomId, m.Msg, seq)
 	case config.OpRoomCountSend:
 		task.broadcastRoomCountToConnect(m.RoomId, m.Count)
 	case config.OpRoomInfoSend:

@@ -9,16 +9,18 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/rpcxio/libkv/store"
-	etcdV3 "github.com/rpcxio/rpcx-etcd/client"
-	"github.com/sirupsen/logrus"
-	"github.com/smallnest/rpcx/client"
 	"gochat/config"
 	"gochat/proto"
+	"gochat/task/dao"
 	"gochat/tools"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/rpcxio/libkv/store"
+	etcdV3 "github.com/rpcxio/rpcx-etcd/client"
+	"github.com/sirupsen/logrus"
+	"github.com/smallnest/rpcx/client"
 )
 
 var RClient = &RpcConnectClient{
@@ -196,13 +198,14 @@ func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) {
 	logrus.Infof("reply %s", reply.Msg)
 }
 
-func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) {
+func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
+	seq := tools.GetSnowflakeId()
 	pushRoomMsgReq := &proto.PushRoomMsgRequest{
 		RoomId: roomId,
 		Msg: proto.Msg{
 			Ver:       config.MsgVersion,
 			Operation: config.OpRoomSend,
-			SeqId:     tools.GetSnowflakeId(),
+			SeqId:     seq,
 			Body:      msg,
 		},
 	}
@@ -213,6 +216,29 @@ func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) {
 		rpc.Call(context.Background(), "PushRoomMsg", pushRoomMsgReq, reply)
 		logrus.Infof("reply %s", reply.Msg)
 	}
+
+	return seq
+}
+
+func (task *Task) broadcastRoomToDb(roomId int, msg []byte, seq string) (msgId int, err error) {
+	message := new(dao.Message)
+	var rawMsg proto.Send
+	if err := json.Unmarshal(msg, &rawMsg); err != nil {
+		logrus.Errorf("ws message struct %+v", rawMsg)
+	}
+	message.RoomId = rawMsg.RoomId
+	message.Msg = rawMsg.Msg
+	message.FromUserId = rawMsg.FromUserId
+	message.FromUserName = rawMsg.FromUserName
+	message.ToUserId = rawMsg.ToUserId
+	message.ToUserName = rawMsg.ToUserName
+	message.SendTime = rawMsg.CreateTime
+	message.Seq = seq
+	msgId, err = message.Add()
+	if err != nil {
+		logrus.Infof("register err:%s", err.Error())
+	}
+	return msgId, err
 }
 
 func (task *Task) broadcastRoomCountToConnect(roomId, count int) {
