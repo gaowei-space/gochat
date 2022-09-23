@@ -58,7 +58,7 @@ func (task *Task) Push(msg string) {
 		}
 	case config.OpRoomSend:
 		seq := task.broadcastRoomToConnect(m.RoomId, m.Msg)
-		task.broadcastRoomToDb(m.RoomId, m.Msg, seq)
+		task.broadcastRoomToDb(m.Msg, seq)
 	case config.OpRoomCountSend:
 		task.broadcastRoomCountToConnect(m.RoomId, m.Count)
 	case config.OpRoomInfoSend:

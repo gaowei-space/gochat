@@ -220,7 +220,7 @@ func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
 	return seq
 }
 
-func (task *Task) broadcastRoomToDb(roomId int, msg []byte, seq string) (msgId int, err error) {
+func (task *Task) broadcastRoomToDb(msg []byte, seq string) (msgId int, err error) {
 	message := new(dao.Message)
 	var rawMsg proto.Send
 	if err := json.Unmarshal(msg, &rawMsg); err != nil {
