@@ -66,5 +66,7 @@ func (task *Task) Push(msg string) {
 		task.broadcastRoomCountToConnect(m.RoomId, m.Count)
 	case config.OpRoomInfoSend:
 		task.broadcastRoomInfoToConnect(m.RoomId, m.RoomUserInfo)
+	case config.OpSyncRoomMessages:
+		task.syncRoomMessageToConnect(m.ServerId, m.RoomId, m.RoomUserInfo, m.SeqId)
 	}
 }

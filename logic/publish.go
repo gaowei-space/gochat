@@ -9,16 +9,17 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/go-redis/redis"
-	"github.com/rcrowley/go-metrics"
-	"github.com/rpcxio/rpcx-etcd/serverplugin"
-	"github.com/sirupsen/logrus"
-	"github.com/smallnest/rpcx/server"
 	"gochat/config"
 	"gochat/proto"
 	"gochat/tools"
 	"strings"
 	"time"
+
+	"github.com/go-redis/redis"
+	"github.com/rcrowley/go-metrics"
+	"github.com/rpcxio/rpcx-etcd/serverplugin"
+	"github.com/sirupsen/logrus"
+	"github.com/smallnest/rpcx/server"
 )
 
 var RedisClient *redis.Client
@@ -147,6 +148,27 @@ func (logic *Logic) RedisPushRoomInfo(roomId int, count int, roomUserInfo map[st
 	var redisMsg = &proto.RedisMsg{
 		Op:           config.OpRoomInfoSend,
 		RoomId:       roomId,
+		Count:        count,
+		RoomUserInfo: roomUserInfo,
+	}
+	redisMsgByte, err := json.Marshal(redisMsg)
+	if err != nil {
+		logrus.Errorf("logic,RedisPushRoomInfo redisMsg error : %s", err.Error())
+		return
+	}
+	err = RedisClient.LPush(config.QueueName, redisMsgByte).Err()
+	if err != nil {
+		logrus.Errorf("logic,RedisPushRoomInfo redisMsg error : %s", err.Error())
+		return
+	}
+	return
+}
+
+func (logic *Logic) RedisPushRoomMessages(roomId int, count int, roomUserInfo map[string]string, seqId int64) (err error) {
+	var redisMsg = &proto.RedisMsg{
+		Op:           config.OpSyncRoomMessages,
+		RoomId:       roomId,
+		SeqId:        seqId,
 		Count:        count,
 		RoomUserInfo: roomUserInfo,
 	}

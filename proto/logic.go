@@ -81,6 +81,21 @@ type Send struct {
 	ToUserName   string `json:"toUserName"`
 	RoomId       int    `json:"roomId"`
 	Op           int    `json:"op"`
+	SeqId        int64  `json:"seqId"`
+	CreateTime   string `json:"createTime"`
+}
+
+type Msgs struct {
+	Msgs []MsgItem `json:"msgs"`
+}
+
+type MsgItem struct {
+	Msg          string `json:"msg"`
+	FromUserId   int    `json:"fromUserId"`
+	FromUserName string `json:"fromUserName"`
+	ToUserId     int    `json:"toUserId"`
+	ToUserName   string `json:"toUserName"`
+	SeqId        int64  `json:"seqId"`
 	CreateTime   string `json:"createTime"`
 }
 

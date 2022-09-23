@@ -6,13 +6,14 @@
 package handler
 
 import (
-	"github.com/gin-gonic/gin"
-	"github.com/gin-gonic/gin/binding"
 	"gochat/api/rpc"
 	"gochat/config"
 	"gochat/proto"
 	"gochat/tools"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
 )
 
 type FormPush struct {
@@ -138,6 +139,32 @@ func GetRoomInfo(c *gin.Context) {
 	req := &proto.Send{
 		RoomId: roomId,
 		Op:     config.OpRoomInfoSend,
+	}
+	code, msg := rpc.RpcLogicObj.GetRoomInfo(req)
+	if code == tools.CodeFail {
+		tools.FailWithMsg(c, "rpc get room info fail!")
+		return
+	}
+	tools.SuccessWithMsg(c, "ok", msg)
+	return
+}
+
+type FormSyncRoomMessages struct {
+	RoomId int   `form:"roomId" json:"roomId" binding:"required"`
+	SeqId  int64 `form:"seqId" json:"seqId" binding:"required"`
+}
+
+func SyncRoomMessages(c *gin.Context) {
+	var formSyncRoomMessages FormSyncRoomMessages
+	if err := c.ShouldBindBodyWith(&formSyncRoomMessages, binding.JSON); err != nil {
+		tools.FailWithMsg(c, err.Error())
+		return
+	}
+
+	req := &proto.Send{
+		RoomId: formSyncRoomMessages.RoomId,
+		SeqId:  formSyncRoomMessages.SeqId,
+		Op:     config.OpSyncRoomMessages,
 	}
 	code, msg := rpc.RpcLogicObj.GetRoomInfo(req)
 	if code == tools.CodeFail {

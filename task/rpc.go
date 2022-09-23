@@ -308,3 +308,29 @@ func (task *Task) broadcastRoomInfoToConnect(roomId int, roomUserInfo map[string
 		logrus.Infof("broadcastRoomInfoToConnect rpc  reply %v", reply)
 	}
 }
+
+func (task *Task) syncRoomMessageToConnect(serverId string, roomId int, roomUserInfo map[string]string, seqId int64) {
+	logrus.Infof("syncRoomMessageToConnect roomId:%d, seqId:%d", roomId, seqId)
+
+	// TODO 读取数据库，拼装消息，发送消息
+	pushMsgReq := &proto.PushMsgRequest{
+		UserId: userId,
+		Msg: proto.Msg{
+			Ver:       config.MsgVersion,
+			Operation: config.OpSingleSend,
+			SeqId:     seqId,
+			Body:      msg,
+		},
+	}
+	reply := &proto.SuccessReply{}
+	connectRpc, err := RClient.GetRpcClientByServerId(serverId)
+	if err != nil {
+		logrus.Infof("get rpc client err %v", err)
+	}
+	err = connectRpc.Call(context.Background(), "PushSingleMsg", pushMsgReq, reply)
+	if err != nil {
+		logrus.Infof("pushSingleToConnect Call err %v", err)
+	}
+
+	logrus.Infof("reply %s", reply.Msg)
+}

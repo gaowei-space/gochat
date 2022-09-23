@@ -33,6 +33,7 @@ const (
 	OpRoomCountSend       = 4 // get online user count
 	OpRoomInfoSend        = 5 // send info to room
 	OpBuildTcpConn        = 6 // build tcp conn
+	OpSyncRoomMessages    = 7 // sync room messages
 )
 
 type Config struct {

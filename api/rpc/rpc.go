@@ -7,14 +7,15 @@ package rpc
 
 import (
 	"context"
-	"github.com/rpcxio/libkv/store"
-	etcdV3 "github.com/rpcxio/rpcx-etcd/client"
-	"github.com/sirupsen/logrus"
-	"github.com/smallnest/rpcx/client"
 	"gochat/config"
 	"gochat/proto"
 	"sync"
 	"time"
+
+	"github.com/rpcxio/libkv/store"
+	etcdV3 "github.com/rpcxio/rpcx-etcd/client"
+	"github.com/sirupsen/logrus"
+	"github.com/smallnest/rpcx/client"
 )
 
 var LogicRpcClient client.XClient
@@ -127,6 +128,14 @@ func (rpc *RpcLogic) Count(req *proto.Send) (code int, msg string) {
 func (rpc *RpcLogic) GetRoomInfo(req *proto.Send) (code int, msg string) {
 	reply := &proto.SuccessReply{}
 	LogicRpcClient.Call(context.Background(), "GetRoomInfo", req, reply)
+	code = reply.Code
+	msg = reply.Msg
+	return
+}
+
+func (rpc *RpcLogic) SyncRoomMessages(req *proto.Send) (code int, msg string) {
+	reply := &proto.SuccessReply{}
+	LogicRpcClient.Call(context.Background(), "SyncRoomMessages", req, reply)
 	code = reply.Code
 	msg = reply.Msg
 	return
