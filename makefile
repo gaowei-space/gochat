@@ -11,11 +11,11 @@ gochat:
 stop:
 	pkill gochat
 
-.PHONY: run
-run: build run-logic run-ctcp run-cwebsocket run-task run-api
+.PHONY: start
+start: build run-logic run-ctcp run-cwebsocket run-task run-api run-site
 
-.PHONY: run-test
-run: build run-logic run-ctcp run-cwebsocket run-task run-api run-site
+.PHONY: restart
+restart: stop start
 
 .PHONY: run-logic
 run-logic:
