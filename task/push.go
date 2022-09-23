@@ -38,8 +38,10 @@ func (task *Task) processSinglePush(ch chan *PushParams) {
 	var arg *PushParams
 	for {
 		arg = <-ch
-		//@todo when arg.ServerId server is down, user could be reconnect other serverId but msg in queue no consume
-		task.pushSingleToConnect(arg.ServerId, arg.UserId, arg.Msg)
+		// @todo when arg.ServerId server is down, user could be reconnect other serverId but msg in queue no consume
+		seqId := task.pushSingleToConnect(arg.ServerId, arg.UserId, arg.Msg)
+		// add db
+		task.messageToDb(arg.Msg, seqId, 1)
 	}
 }
 
@@ -57,8 +59,9 @@ func (task *Task) Push(msg string) {
 			Msg:      m.Msg,
 		}
 	case config.OpRoomSend:
-		seq := task.broadcastRoomToConnect(m.RoomId, m.Msg)
-		task.broadcastRoomToDb(m.Msg, seq)
+		seqId := task.broadcastRoomToConnect(m.RoomId, m.Msg)
+		// add db
+		task.messageToDb(m.Msg, seqId, 2)
 	case config.OpRoomCountSend:
 		task.broadcastRoomCountToConnect(m.RoomId, m.Count)
 	case config.OpRoomInfoSend:

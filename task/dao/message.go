@@ -15,7 +15,7 @@ type Message struct {
 	Id           int    `gorm:"primary_key" json:"id,omitempty"`
 	Seq          string `json:"seq,omitempty"`
 	RoomId       int    `json:"room_id,omitempty"`
-	ReceiverType string `json:"receiver_type,omitempty"`
+	ReceiverType int    `json:"receiver_type,omitempty"`
 	FromUserName string `json:"from_user_name,omitempty"`
 	FromUserId   int    `json:"from_user_id,omitempty"`
 	ToUserName   string `json:"to_user_name,omitempty"`

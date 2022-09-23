@@ -175,14 +175,16 @@ func (task *Task) watchServicesChange(d client.ServiceDiscovery) {
 	}
 }
 
-func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) {
+func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) string {
 	logrus.Infof("pushSingleToConnect Body %s", string(msg))
+
+	seqId := tools.GetSnowflakeId()
 	pushMsgReq := &proto.PushMsgRequest{
 		UserId: userId,
 		Msg: proto.Msg{
 			Ver:       config.MsgVersion,
 			Operation: config.OpSingleSend,
-			SeqId:     tools.GetSnowflakeId(),
+			SeqId:     seqId,
 			Body:      msg,
 		},
 	}
@@ -195,17 +197,22 @@ func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) {
 	if err != nil {
 		logrus.Infof("pushSingleToConnect Call err %v", err)
 	}
+
 	logrus.Infof("reply %s", reply.Msg)
+
+	return seqId
 }
 
 func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
-	seq := tools.GetSnowflakeId()
+	logrus.Infof("broadcastRoomToConnect Body %s", string(msg))
+
+	seqId := tools.GetSnowflakeId()
 	pushRoomMsgReq := &proto.PushRoomMsgRequest{
 		RoomId: roomId,
 		Msg: proto.Msg{
 			Ver:       config.MsgVersion,
 			Operation: config.OpRoomSend,
-			SeqId:     seq,
+			SeqId:     seqId,
 			Body:      msg,
 		},
 	}
@@ -217,10 +224,10 @@ func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
 		logrus.Infof("reply %s", reply.Msg)
 	}
 
-	return seq
+	return seqId
 }
 
-func (task *Task) broadcastRoomToDb(msg []byte, seq string) (msgId int, err error) {
+func (task *Task) messageToDb(msg []byte, seq string, rtype int) (msgId int, err error) {
 	message := new(dao.Message)
 	var rawMsg proto.Send
 	if err := json.Unmarshal(msg, &rawMsg); err != nil {
@@ -228,6 +235,7 @@ func (task *Task) broadcastRoomToDb(msg []byte, seq string) (msgId int, err erro
 	}
 	message.RoomId = rawMsg.RoomId
 	message.Msg = rawMsg.Msg
+	message.ReceiverType = rtype
 	message.FromUserId = rawMsg.FromUserId
 	message.FromUserName = rawMsg.FromUserName
 	message.ToUserId = rawMsg.ToUserId
