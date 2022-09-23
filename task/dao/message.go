@@ -13,16 +13,16 @@ var dbIns = db.GetDb("gochat")
 
 type Message struct {
 	Id           int    `gorm:"primary_key" json:"id,omitempty"`
-	Seq          string `json:"seq,omitempty"`
+	SeqId        int64  `json:"seq_id,omitempty"`
 	RoomId       int    `json:"room_id,omitempty"`
-	ReceiverType int    `json:"receiver_type,omitempty"`
+	ReceiverType int8   `json:"receiver_type,omitempty"`
 	FromUserName string `json:"from_user_name,omitempty"`
 	FromUserId   int    `json:"from_user_id,omitempty"`
 	ToUserName   string `json:"to_user_name,omitempty"`
 	ToUserId     int    `json:"to_user_id,omitempty"`
 	MsgType      int    `json:"msg_type,omitempty"`
 	Msg          string `json:"msg,omitempty"`
-	Status       int    `json:"status,omitempty"`
+	Status       int8   `json:"status,omitempty"`
 	SendTime     string `json:"send_time,omitempty"`
 	db.DbGoChat
 }

@@ -175,7 +175,7 @@ func (task *Task) watchServicesChange(d client.ServiceDiscovery) {
 	}
 }
 
-func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) string {
+func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) int64 {
 	logrus.Infof("pushSingleToConnect Body %s", string(msg))
 
 	seqId := tools.GetSnowflakeId()
@@ -203,7 +203,7 @@ func (task *Task) pushSingleToConnect(serverId string, userId int, msg []byte) s
 	return seqId
 }
 
-func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
+func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) int64 {
 	logrus.Infof("broadcastRoomToConnect Body %s", string(msg))
 
 	seqId := tools.GetSnowflakeId()
@@ -227,7 +227,7 @@ func (task *Task) broadcastRoomToConnect(roomId int, msg []byte) string {
 	return seqId
 }
 
-func (task *Task) messageToDb(msg []byte, seq string, rtype int) (msgId int, err error) {
+func (task *Task) messageToDb(msg []byte, seqId int64, receiverType int8) (msgId int, err error) {
 	message := new(dao.Message)
 	var rawMsg proto.Send
 	if err := json.Unmarshal(msg, &rawMsg); err != nil {
@@ -235,13 +235,13 @@ func (task *Task) messageToDb(msg []byte, seq string, rtype int) (msgId int, err
 	}
 	message.RoomId = rawMsg.RoomId
 	message.Msg = rawMsg.Msg
-	message.ReceiverType = rtype
+	message.ReceiverType = receiverType
 	message.FromUserId = rawMsg.FromUserId
 	message.FromUserName = rawMsg.FromUserName
 	message.ToUserId = rawMsg.ToUserId
 	message.ToUserName = rawMsg.ToUserName
 	message.SendTime = rawMsg.CreateTime
-	message.Seq = seq
+	message.SeqId = seqId
 	msgId, err = message.Add()
 	if err != nil {
 		logrus.Infof("register err:%s", err.Error())
