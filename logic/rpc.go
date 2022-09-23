@@ -9,14 +9,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus"
 	"gochat/config"
 	"gochat/logic/dao"
 	"gochat/proto"
 	"gochat/tools"
 	"strconv"
 	"time"
+
+	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 )
 
 type RpcLogic struct {
@@ -180,6 +181,7 @@ func (rpc *RpcLogic) Push(ctx context.Context, args *proto.Send, reply *proto.Su
 	reply.Code = config.FailReplyCode
 	sendData := args
 	var bodyBytes []byte
+	sendData.CreateTime = tools.GetNowDateTime()
 	bodyBytes, err = json.Marshal(sendData)
 	if err != nil {
 		logrus.Errorf("logic,push msg fail,err:%s", err.Error())
